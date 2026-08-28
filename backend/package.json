@@ -1,13 +1,36 @@
 {
-  "name": "backend",
+  "name": "backnd",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --respawn --transpile-only  src/server.ts",
+    "build": "rimraf dist && tsc",
+    "start": "node dist/server.js",
+    "db:generate": "prisma generate --schema=./src/prisma",
+    "db:migrate": "prisma migrate dev --schema=./src/prisma",
+    "db:studio": "prisma studio --schema=./src/prisma",
+    "db:deploy": "prisma migrate deploy --schema=./src/prisma",
+    "db:pull": "prisma db pull --schema=./src/prisma",
+    "db:reset": "prisma migrate reset --schema=./src/prisma"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "express": "^5.2.1",
+    "pg": "^8.23.0",
+    "zod": "^4.5.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.4.0",
+    "@types/pg": "^8.23.1",
+    "prisma": "^7.10.0",
+    "typescript": "^7.0.2"
+  }
 }

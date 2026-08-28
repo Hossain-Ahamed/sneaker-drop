@@ -1,0 +1,48 @@
+model Drop {
+    id             String   @id @default(uuid(7))
+    name           String
+    price          Decimal  @db.Decimal(10, 2)
+    total_stock     Int
+    available_stock Int
+    starts_at       DateTime // sale start time
+    created_at      DateTime @default(now())
+
+    reservations Reservation[]
+    purchases    Purchase[]
+}
+
+model Reservation {
+    id        String   @id @default(uuid(7))
+    
+    status    Status   @default(ACTIVE)
+
+    expires_at DateTime
+    created_at DateTime @default(now())
+
+    user_id String
+    user   User   @relation(fields: [user_id], references: [id])
+
+    drop_id String
+    drop   Drop   @relation(fields: [drop_id], references: [id])
+
+    purchase Purchase?
+
+    @@index([drop_id, status])
+    @@index([status, expires_at])
+}
+
+model Purchase {
+    id          String   @id @default(uuid(7))
+    purchased_at DateTime @default(now())
+
+    user_id String
+    user   User   @relation(fields: [user_id], references: [id])
+
+    drop_id String
+    drop   Drop   @relation(fields: [drop_id], references: [id])
+
+    reservationId String      @unique
+    reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+    @@index([drop_id, purchased_at])
+}
