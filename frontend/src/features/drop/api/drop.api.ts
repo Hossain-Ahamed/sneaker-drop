@@ -18,8 +18,8 @@ export const DropAPI = {
       },
     }),
 
-  /** Creates a drop */
-  useCreateDrop: () => {
+  /** Create drop */
+  useCreateDropMutation: () => {
     const queryClient = useQueryClient();
 
     return useMutation({

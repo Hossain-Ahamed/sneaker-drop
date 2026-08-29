@@ -28,6 +28,17 @@ export class UserBusinessLogic {
   }
 
   /**
+   * Resolves an existing user by username, throws 404 when nobody owns it
+   */
+  async signInLogic(username: string): Promise<IUserType.IUser> {
+    const user = await userRepository.findByUsername(username);
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'No account with that username');
+    }
+    return toIUser(user);
+  }
+
+  /**
    * Fetches one user, throws 404 when the id matches nobody
    */
   async getUserLogic(userId: string, tx?: TxContext): Promise<IUserType.IUser> {

@@ -5,31 +5,40 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useCountdown, useReservationStore } from "@/features/reservation";
+import { useHasStarted } from "../hooks/useHasStarted";
+import { DropActions } from "./DropActions";
+import { DropActivityFeed } from "./DropActivityFeed";
 import type { IDropType } from "../types";
+import { formatPrice } from "@/utils/formatPrice";
 
-type DropCardProps = { drop: IDropType.IDrop };
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(price);
-}
-
-export function DropCard({ drop }: DropCardProps) {
+export function DropCard({ drop }: { drop: IDropType.IDrop }) {
   const isSoldOut = drop.available_stock <= 0;
 
+  const reservedDrops = useReservationStore((state) => state.reservations[drop.id]);
+  const remainingSecondToPurchase = useCountdown(reservedDrops?.expires_at ?? null);
+  
+  const isReserved = Boolean(reservedDrops) && remainingSecondToPurchase > 0;
+  const hasStarted = useHasStarted(drop.starts_at);
+
   return (
-    <Card>
+    <Card className={isReserved ? "ring-2 ring-primary" : undefined}>
       <CardHeader>
         <CardTitle className="truncate">{drop.name}</CardTitle>
         <CardDescription>{formatPrice(drop.price)}</CardDescription>
         <CardAction>
-          <Badge variant={isSoldOut ? "destructive" : "secondary"}>
-            {isSoldOut ? "Sold out" : "Live"}
-          </Badge>
+          {isReserved ? (
+            <Badge>Reserved</Badge>
+          ) : !hasStarted ? (
+            <Badge variant="outline">Upcoming</Badge>
+          ) : (
+            <Badge variant={isSoldOut ? "destructive" : "secondary"}>
+              {isSoldOut ? "Sold out" : "Live"}
+            </Badge>
+          )}
         </CardAction>
       </CardHeader>
 
@@ -43,6 +52,16 @@ export function DropCard({ drop }: DropCardProps) {
           </span>
         </div>
       </CardContent>
+
+      <CardFooter className="flex-col items-stretch gap-4">
+        <DropActions
+          drop={drop}
+          hasStarted={hasStarted}
+          isSoldOut={isSoldOut}
+          remainingSecondToPurchase={remainingSecondToPurchase}
+        />
+        <DropActivityFeed purchasers={drop.recent_purchasers} />
+      </CardFooter>
     </Card>
   );
 }

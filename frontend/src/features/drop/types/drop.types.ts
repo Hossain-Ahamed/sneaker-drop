@@ -22,4 +22,10 @@ export namespace IDropType {
     total_stock: number;
     starts_at: string;
   };
+
+  /** Payload of the stock:updated socket event */
+  export type TStockUpdated = {
+    drop_id: string;
+    available_stock: number;
+  };
 }

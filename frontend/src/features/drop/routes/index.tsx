@@ -14,5 +14,8 @@ export const dropRoutes: RouteObject[] = [
    * @component DropList - Displays a list of drops.
    * ==============================================================
    */
-  { index: true, element: <DropList /> },
+  {
+    index: true,
+    element: <DropList />,
+  },
 ];

@@ -11,6 +11,13 @@ export class UserService {
   }
 
   /**
+   * Sign in an existing user by username
+   */
+  async signIn(username: string): Promise<IUserType.IUser> {
+    return userBusinessLogic.signInLogic(username);
+  }
+
+  /**
    * get user by ID
    */
   async getUser(userId: string, tx?: TxContext): Promise<IUserType.IUser> {

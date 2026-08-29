@@ -6,9 +6,10 @@ export const api = axios.create({
   baseURL: config.API_URL,
   timeout: config.REQUEST_TIMEOUT,
   headers: { "Content-Type": "application/json" },
+  // identity rides in an httpOnly cookie, so every request must carry it
+  withCredentials: true,
 });
 
-/** Normalizes every axios failure into the ApiError shape the UI reads */
 api.interceptors.response.use(
   (response) => response,
   (error) => {

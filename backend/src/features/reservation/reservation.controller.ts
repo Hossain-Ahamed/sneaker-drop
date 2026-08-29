@@ -10,7 +10,10 @@ export class ReservationController {
    * reserve a unit and hold for user
    */
   createReservation = catchAsync(async (req: Request, res: Response) => {
-    const reservation = await reservationService.createReservation(req.body);
+    const reservation = await reservationService.createReservation({
+      drop_id: req.body.drop_id,
+      user_id: req.userId as string,
+    });
 
     sendResponse(res, {
       statusCode: httpStatus.CREATED,

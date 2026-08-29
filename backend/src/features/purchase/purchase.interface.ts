@@ -13,9 +13,7 @@ export namespace IPurchaseType {
   };
   export type TNewPurchase = {
     drop_id: string;
-    drop_name : string;
     purchased_at: Date;
-    name : string;
     username: string;
   };
 }

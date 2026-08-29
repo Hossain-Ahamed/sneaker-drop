@@ -25,6 +25,7 @@ export class DropRepository {
     tx: Prisma.TransactionClient | PrismaClient = prisma,
   ): Promise<TDropWithPurchases[]> {
     return tx.drop.findMany({
+      orderBy: { created_at: "asc" },
       include: {
         purchases: {
           orderBy: { purchased_at: "desc" },

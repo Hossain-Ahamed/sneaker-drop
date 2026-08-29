@@ -1,7 +1,7 @@
 export const dropAPIEndpoints = {
-  /** GET /drops — list drops with stock and recent buyer info */
+  /** GET /drops */
   list: "/drops",
 
-  /** POST /drops — create drop */
+  /** POST /drops  */
   create: "/drops",
 };

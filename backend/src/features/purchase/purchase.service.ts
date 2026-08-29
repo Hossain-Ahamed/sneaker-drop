@@ -56,9 +56,7 @@ export class PurchaseService {
       PURCHASE_CONSTANTS.NEW_PURCHASE_EVENT,
       {
         drop_id: purchase.drop_id,
-        drop_name : drop.name,
         purchased_at: purchase.purchased_at,
-        name : buyer.name,
         username: buyer.username,
       },
     );

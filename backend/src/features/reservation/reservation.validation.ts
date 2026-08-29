@@ -4,7 +4,6 @@ export class ReservationValidationSchema {
   static createReservationSchema = z.object({
     body: z.object({
       drop_id: z.string().min(1, "drop id is required"),
-      user_id: z.string().min(1, "User id is required"),
     }),
   });
 }

@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DropAPI } from "../api";
 import { DropCard } from "../components/DropCard";
+import { usePurchaseSocket } from "@/features/purchase";
+import { useDropSocket } from "../socket/useDropSocket";
 
 function DropListSkeleton() {
   return (
@@ -26,6 +28,10 @@ function DropListSkeleton() {
 export default function DropList() {
   const { data: drops, isPending, isError, error } = DropAPI.useDrops();
 
+  // connect with socket
+  useDropSocket(drops?.map((drop) => drop.id) ?? []);
+  usePurchaseSocket();
+
   if (isPending) return <DropListSkeleton />;
 
   if (isError) {
@@ -42,9 +48,6 @@ export default function DropList() {
       <Card>
         <CardContent className="py-10 text-center">
           <p className="font-medium">No drops yet</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Create one with POST /drops to see it here.
-          </p>
         </CardContent>
       </Card>
     );

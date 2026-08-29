@@ -10,6 +10,16 @@ export class UserRepository {
   }
 
   /**
+   * get user by username
+   */
+  async findByUsername(
+    username: string,
+    tx: Prisma.TransactionClient | PrismaClient = prisma,
+  ): Promise<User | null> {
+    return tx.user.findUnique({ where: { username } });
+  }
+
+  /**
    * get user by id
    */
   async findById(

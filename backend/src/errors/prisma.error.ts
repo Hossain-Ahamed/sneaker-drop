@@ -2,6 +2,32 @@ import { Prisma } from '../generated/prisma/client';
 import { TErrorSources, TGenericErrorResponse } from '../interfaces';
 import { httpStatus, httpStatusMessage, HttpStatus } from '../utils/http-status';
 
+/**
+ * Names the column a unique violation hit. Prisma reports this as `meta.target`
+ * on its native engine, but through a driver adapter it only surfaces the
+ * constraint's index name (e.g. `User_username_key`), so both shapes are read.
+ */
+const uniqueViolationField = (err: Prisma.PrismaClientKnownRequestError): string => {
+  const target = err.meta?.target as string[] | string | undefined;
+  if (Array.isArray(target) && target[0]) return target[0];
+  if (typeof target === 'string' && target) return target;
+
+  const index = (err.meta as any)?.driverAdapterError?.cause?.constraint?.index as
+    | string
+    | undefined;
+  const model = (err.meta as any)?.modelName as string | undefined;
+
+  // "User_username_key" -> "username"
+  if (index) {
+    const stripped = index
+      .replace(new RegExp(`^${model ?? ''}_`), '')
+      .replace(/_key$/, '');
+    if (stripped) return stripped;
+  }
+
+  return 'field';
+};
+
 const handlePrismaError = (err: any): TGenericErrorResponse => {
   let statusCode: HttpStatus = httpStatus.INTERNAL_SERVER_ERROR;
   let message: string = httpStatusMessage[statusCode];
@@ -19,9 +45,11 @@ const handlePrismaError = (err: any): TGenericErrorResponse => {
       statusCode = httpStatus.CONFLICT;
       message = httpStatusMessage[statusCode];
 
-      const target = err.meta?.target as string[] | undefined;
-      const field: string = (target && target[0]) || 'field';
+      const field = uniqueViolationField(err);
 
+      // the client shows the top-level message, so name the field there too —
+      // a bare "Conflict" tells the user nothing about what to change
+      message = `${field} already exists`;
       errorSources = [
         {
           path: field,

@@ -17,22 +17,5 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis/redis-stack:7.4.0-v8
-    container_name: sneaker-drop-cache
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:${REDIS_PORT}:6379"
-      - "127.0.0.1:${REDISINSIGHT_PORT}:8001"
-    environment:
-      - >-
-        REDIS_ARGS=--user default off
-        --user ${REDIS_ADMIN_USER} on #${REDIS_ADMIN_HASH} ~* &* +@all
-        --user ${REDIS_READONLY_USER} on #${REDIS_READONLY_HASH} ~* &* +@read
-        --save ""
-        --appendonly no
-        
-
 volumes:
   pgdata:
-  redisdata:

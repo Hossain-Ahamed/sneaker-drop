@@ -15,7 +15,6 @@ export const router = createBrowserRouter([
         path: "/",
         element: <DashboardLayout />,
         children: [
-          /** Drop listing */
           { path: "", children: dropRoutes },
         ],
       },

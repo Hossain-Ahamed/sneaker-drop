@@ -82,6 +82,14 @@ export class DropBusinessLogic {
       throw new ApiError(httpStatus.NOT_FOUND, "Drop not found");
     }
 
+    // check if sale started 
+    if (drop.starts_at.getTime() > Date.now()) {
+      throw new ApiError(
+        httpStatus.FORBIDDEN,
+        "This drop has not started yet",
+      );
+    }
+
     const claimed = await dropRepository.decrementStock(dropId, tx);
     if (!claimed) {
       throw new ApiError(httpStatus.CONFLICT, "Out of stock");

@@ -10,7 +10,11 @@ export class PurchaseController {
    * make a purchase
    */
   createPurchase = catchAsync(async (req: Request, res: Response) => {
-    const purchase = await purchaseService.createPurchase(req.body);
+    // identity comes from the httpOnly cookie, never the body
+    const purchase = await purchaseService.createPurchase({
+      reservation_id: req.body.reservation_id,
+      user_id: req.userId as string,
+    });
 
     sendResponse(res, {
       statusCode: httpStatus.CREATED,

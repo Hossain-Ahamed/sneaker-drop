@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import router from './routes';
 import config from './config';
 import { httpStatus } from './utils/http-status';
@@ -13,6 +14,7 @@ app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 
 /* ------------ PARSERS ------------ */
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 /* ------------ ROUTES ------------ */
