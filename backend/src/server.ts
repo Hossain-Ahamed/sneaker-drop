@@ -6,6 +6,7 @@ import {
   initiateReservationExpiredSweep,
   terminateReservationExpirySweep,
 } from "./features/reservation/reservation.scheduler";
+import { initiateSocket, terminateSocket } from "./lib/socket";
 
 let server: Server;
 const port = config.PORT;
@@ -18,6 +19,10 @@ async function startServer() {
     server = app.listen(port, () => {
       console.log(`App listening on port ${port} in ${config.NODE_ENV} mode`);
     });
+
+    // attach socket.io to the same http server
+    initiateSocket(server);
+    console.log("Socket.io ready");
 
     // start the reservation cleaning which are expired
     initiateReservationExpiredSweep();
@@ -48,6 +53,9 @@ function shutdown(code: number) {
 
   // stop the reservation sweep process
   terminateReservationExpirySweep();
+
+  // close socket connections
+  terminateSocket();
 
   if (server) {
     server.close(() => {

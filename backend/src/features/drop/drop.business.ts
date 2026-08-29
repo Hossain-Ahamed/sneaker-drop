@@ -45,6 +45,17 @@ export class DropBusinessLogic {
   }
 
   /**
+   * Fetches one drop, throws 404 when the id matches nothing
+   */
+  async getDropLogic(dropId: string, tx?: TxContext): Promise<IDropType.IDrop> {
+    const drop = await dropRepository.findById(dropId, tx);
+    if (!drop) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Drop not found");
+    }
+    return toIDrop(drop);
+  }
+
+  /**
    * Claims one unit of stock
    * If stock out -> throw http status 409 and out of stock message
    */

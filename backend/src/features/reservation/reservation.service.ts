@@ -11,10 +11,22 @@ export class ReservationService {
   async createReservation(
     payload: IReservationType.CreateReservationDTO,
   ): Promise<IReservationType.IReservation> {
-    return transaction(async (tx) => {
-      await dropService.claimStock(payload.drop_id, tx);
-      return reservationBusinessLogic.createReservationLogic(payload, tx);
+    const { reservation, available_stock } = await transaction(async (tx) => {
+      const remaining = await dropService.claimStock(payload.drop_id, tx);
+      const created = await reservationBusinessLogic.createReservationLogic(
+        payload,
+        tx,
+      );
+      return { reservation: created, available_stock: remaining };
     });
+
+    // emitted after commit, a rolled back claim must never reach clients
+    dropService.broadcastStockUpdated({
+      drop_id: payload.drop_id,
+      available_stock,
+    });
+
+    return reservation;
   }
 
   /**
@@ -29,18 +41,28 @@ export class ReservationService {
     let expiredCount = 0;
     for (const reservation of list) {
       // own transaction per reservation, one failure must not abort the rest
-      const expired = await transaction(async (tx) => {
+      const restored = await transaction(async (tx) => {
         const dropId = await reservationBusinessLogic.expireReservationLogic(
           reservation.id,
           tx,
         );
-        if (!dropId) return false;
+        if (!dropId) return null;
 
-        await dropService.restoreStock(dropId, tx);
-        return true;
+        const available_stock = await dropService.restoreStock(dropId, tx);
+        return { drop_id: dropId, available_stock };
       });
 
-      if (expired) expiredCount += 1;
+      if (restored) {
+        expiredCount += 1;
+
+        // notify everyone that stock restored
+        if (restored.available_stock !== null) {
+          dropService.broadcastStockUpdated({
+            drop_id: restored.drop_id,
+            available_stock: restored.available_stock,
+          });
+        }
+      }
     }
 
     return expiredCount;

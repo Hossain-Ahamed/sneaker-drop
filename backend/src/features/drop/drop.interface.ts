@@ -15,4 +15,9 @@ export namespace IDropType {
     starts_at: Date;
     created_at: Date;
   };
+
+  export type TStockUpdated = {
+    drop_id: string;
+    available_stock: number;
+  };
 }

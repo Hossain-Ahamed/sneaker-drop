@@ -11,4 +11,11 @@ export namespace IPurchaseType {
     drop_id: string;
     reservation_id: string;
   };
+  export type TNewPurchase = {
+    drop_id: string;
+    drop_name : string;
+    purchased_at: Date;
+    name : string;
+    username: string;
+  };
 }

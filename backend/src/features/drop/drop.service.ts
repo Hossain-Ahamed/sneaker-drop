@@ -1,6 +1,8 @@
 import type { TxContext } from "../../lib/unitOfWork";
+import { emitToRoom } from "../../lib/socket";
 import { dropBusinessLogic } from "./drop.business";
 import { IDropType } from "./drop.interface";
+import { DROP_CONSTANTS, dropRoom } from "./drop.constant";
 
 export class DropService {
   /**
@@ -18,6 +20,13 @@ export class DropService {
   }
 
   /**
+   * get drop by id
+   */
+  async getDrop(dropId: string, tx?: TxContext): Promise<IDropType.IDrop> {
+    return dropBusinessLogic.getDropLogic(dropId, tx);
+  }
+
+  /**
    * Claims one unit of stock for a drop, returns the remaining available stock
    */
   async claimStock(dropId: string, tx?: TxContext): Promise<number> {
@@ -29,6 +38,17 @@ export class DropService {
    */
   async restoreStock(dropId: string, tx?: TxContext): Promise<number | null> {
     return dropBusinessLogic.restoreStockLogic(dropId, tx);
+  }
+
+  /**
+   * broadcast the stock info for that drop
+   */
+  broadcastStockUpdated(payload: IDropType.TStockUpdated): void {
+    emitToRoom(
+      dropRoom(payload.drop_id),
+      DROP_CONSTANTS.STOCK_UPDATED_EVENT,
+      payload,
+    );
   }
 }
 
