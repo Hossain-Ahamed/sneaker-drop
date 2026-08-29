@@ -1,5 +1,6 @@
 import { Server as HttpServer } from "http";
 import { Server, Socket } from "socket.io";
+import config from "../config";
 
 
 export const ROOM_EVENTS = {
@@ -14,7 +15,7 @@ export function initiateSocket(httpServer: HttpServer): Server {
   if (io) return io;
 
   io = new Server(httpServer, {
-    cors: { origin: "*" },
+    cors: { origin: config.CORS_ORIGIN, credentials: true },
   });
 
   io.on("connection", (socket: Socket) => {

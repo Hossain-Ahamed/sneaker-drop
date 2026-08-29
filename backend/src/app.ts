@@ -1,10 +1,15 @@
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import router from './routes';
+import config from './config';
 import { httpStatus } from './utils/http-status';
 import { globalErrorHandler } from './middlewares/globalerrorhandler';
 import { notFound } from './middlewares/not-found';
 
 const app = express();
+
+/* ------------ CORS ------------ */
+app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 
 /* ------------ PARSERS ------------ */
 app.use(express.json());

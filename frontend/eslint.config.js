@@ -18,5 +18,16 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // feature types are declared as a namespace per .claude/agent.md, mirroring the backend
+      '@typescript-eslint/no-namespace': 'off',
+    },
+  },
+  {
+    // shadcn owns these files and exports variants alongside components
+    files: ['src/components/ui/**'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])
