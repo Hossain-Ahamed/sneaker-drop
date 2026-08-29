@@ -10,12 +10,12 @@ dotenv.config({
 });
 
 const config = {
-  PORT: parseInt(process.env.PORT || '5001'),
+  PORT: parseInt(process.env.PORT || '5500'),
   NODE_ENV: env,
   BACKEND_URL: process.env.BACKEND_URL,
   DATABASE_URL: process.env.DATABASE_URL as string,
   /** allowed browser origin for HTTP + socket.io, comma separated */
-  CORS_ORIGIN: (process.env.CORS_ORIGIN || 'http://localhost:5173')
+  CORS_ORIGIN: (process.env.CORS_ORIGIN || 'http://localhost:5501')
     .split(',')
     .map((origin) => origin.trim()),
 };

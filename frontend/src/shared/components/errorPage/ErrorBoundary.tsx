@@ -1,18 +1,19 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { isRouteErrorResponse, useRouteError } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function ErrorScreen({ title, message }: { title: string; message: string }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3 px-6 text-center">
       <p className="text-2xl font-semibold">{title}</p>
       <p className="max-w-md text-sm text-muted-foreground">{message}</p>
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onClick={() => window.location.reload()}
-        className="mt-2 rounded-md border px-4 py-2 text-sm hover:bg-accent"
+        className="mt-2"
       >
         Reload
-      </button>
+      </Button>
     </div>
   );
 }
