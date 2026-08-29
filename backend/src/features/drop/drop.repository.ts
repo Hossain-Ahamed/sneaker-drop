@@ -1,6 +1,11 @@
 import prisma from "../../lib/prisma";
 import type { Drop, Prisma, PrismaClient } from "../../generated/prisma/client";
 
+/** A drop row plus its most recent purchases, each with the buyer attached */
+export type TDropWithPurchases = Drop & {
+  purchases: (Prisma.PurchaseGetPayload<{ include: { user: true } }>)[];
+};
+
 export class DropRepository {
   /**
    * Create a new Drop in DB
@@ -13,12 +18,21 @@ export class DropRepository {
   }
 
   /**
-   * Lists all drops with their current available stock
+   * get drops with their current stock &  newest purchases
    */
   async findActiveDrops(
+    recentPurchasersLimit: number,
     tx: Prisma.TransactionClient | PrismaClient = prisma,
-  ): Promise<Drop[]> {
-    return tx.drop.findMany();
+  ): Promise<TDropWithPurchases[]> {
+    return tx.drop.findMany({
+      include: {
+        purchases: {
+          orderBy: { purchased_at: "desc" },
+          take: recentPurchasersLimit,
+          include: { user: true },
+        },
+      },
+    });
   }
 
   /**

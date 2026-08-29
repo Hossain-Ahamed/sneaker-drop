@@ -1,11 +1,13 @@
 import type { Drop } from "../../generated/prisma/client";
+import type { TDropWithPurchases } from "./drop.repository";
 import type { TxContext } from "../../lib/unitOfWork";
 import ApiError from "../../errors/api.error";
 import { httpStatus } from "../../utils/http-status";
 import { dropRepository } from "./drop.repository";
 import { IDropType } from "./drop.interface";
+import { DROP_CONSTANTS } from "./drop.constant";
 
-/** Maps a Prisma Drop row to the feature's own domain shape */
+/** Maps a Prisma Drop row to the feature's own domain shape*/
 function toIDrop(drop: Drop): IDropType.IDrop {
   return {
     id: drop.id,
@@ -15,6 +17,19 @@ function toIDrop(drop: Drop): IDropType.IDrop {
     available_stock: drop.available_stock,
     starts_at: drop.starts_at,
     created_at: drop.created_at,
+    recent_purchasers: [],
+  };
+}
+
+/** Maps a drop with newest purchases into the domain shape */
+function toIDropWithFeed(drop: TDropWithPurchases): IDropType.IDrop {
+  return {
+    ...toIDrop(drop),
+    recent_purchasers: drop.purchases.map((purchase) => ({
+      name: purchase.user.name,
+      username: purchase.user.username,
+      purchased_at: purchase.purchased_at,
+    })),
   };
 }
 
@@ -40,8 +55,10 @@ export class DropBusinessLogic {
    * Lists all drops items
    */
   async listDropsLogic(): Promise<IDropType.IDrop[]> {
-    const drops = await dropRepository.findActiveDrops();
-    return drops.map(toIDrop);
+    const drops = await dropRepository.findActiveDrops(
+      DROP_CONSTANTS.RECENT_PURCHASERS_LIMIT,
+    );
+    return drops.map(toIDropWithFeed);
   }
 
   /**
