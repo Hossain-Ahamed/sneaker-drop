@@ -1,4 +1,4 @@
-import { transaction } from "../../lib/unitOfWork";
+import { transaction, type TxContext } from "../../lib/unitOfWork";
 import { dropService } from "../drop/drop.service";
 import { reservationBusinessLogic } from "./reservation.business";
 import { IReservationType } from "./reservation.interface";
@@ -44,6 +44,20 @@ export class ReservationService {
     }
 
     return expiredCount;
+  }
+  /**
+   * Completes an active reservation for its owner, joins the caller's transaction
+   */
+  async completeReservation(
+    reservationId: string,
+    userId: string,
+    tx: TxContext,
+  ): Promise<IReservationType.CompletedReservation> {
+    return reservationBusinessLogic.completeReservationLogic(
+      reservationId,
+      userId,
+      tx,
+    );
   }
 }
 

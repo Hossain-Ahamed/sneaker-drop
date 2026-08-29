@@ -58,6 +58,25 @@ export class ReservationRepository {
     `;
     return rows[0] ?? null;
   }
+
+  /**
+   * Mark reservation to COMPLETED
+   * only when still ACTIVE and not past its expiry
+   * returns null when it was already expired, completed or gone
+   */
+  async markReservationCompleted(
+    reservationId: string,
+    now: Date,
+    tx: Prisma.TransactionClient | PrismaClient = prisma,
+  ): Promise<{ drop_id: string; user_id: string } | null> {
+    const rows = await tx.$queryRaw<{ drop_id: string; user_id: string }[]>`
+      UPDATE "Reservation"
+      SET status = 'COMPLETED'
+      WHERE id = ${reservationId} AND status = 'ACTIVE' AND expires_at > ${now}
+      RETURNING drop_id, user_id
+    `;
+    return rows[0] ?? null;
+  }
 }
 
 export const reservationRepository = new ReservationRepository();

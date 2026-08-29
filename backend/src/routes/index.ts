@@ -3,6 +3,7 @@ import { TRoutes } from "../interfaces";
 import { dropRouter } from "../features/drop/drop.route";
 import { userRouter } from "../features/user/user.route";
 import { reservationRouter } from "../features/reservation/reservation.route";
+import { purchaseRouter } from "../features/purchase/purchase.route";
 
 const router = Router();
 
@@ -30,6 +31,14 @@ const moduleRoutes: TRoutes[] = [
   {
     path: "/reservations",
     route: reservationRouter,
+  },
+  /**
+   * Purchase Router
+   * Manage purchases
+   */
+  {
+    path: "/purchases",
+    route: purchaseRouter,
   },
 ];
 

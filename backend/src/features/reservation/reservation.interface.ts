@@ -14,4 +14,11 @@ export namespace IReservationType {
     user_id: string;
     drop_id: string;
   };
+
+  /** What a completed reservation hands to the caller that completed it */
+  export type CompletedReservation = {
+    id: string;
+    user_id: string;
+    drop_id: string;
+  };
 }
