@@ -5,8 +5,8 @@ export class DropValidationSchema {
     body: z.object({
       name: z.string().min(1, 'Item name is required'),
       price: z.number().positive('Price must be a positive number'),
-      totalStock: z.number().int().positive('Total Stock must be positive integer'),
-      startsAt: z.coerce.date(),
+      total_stock: z.number().int().positive('Total Stock must be positive integer'),
+      starts_at: z.coerce.date(),
     }),
   });
 }

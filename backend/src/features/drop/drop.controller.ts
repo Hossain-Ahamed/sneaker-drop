@@ -19,6 +19,21 @@ export class DropController {
       data: drop,
     });
   });
+
+  /**
+   * GET /drops
+   * lists all drop items
+   */
+  listDrops = catchAsync(async (req: Request, res: Response) => {
+    const drops = await dropService.listDropsService();
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Drops fetched successfully',
+      data: drops,
+    });
+  });
 }
 
 export const dropController = new DropController();

@@ -41,8 +41,8 @@ model Purchase {
     drop_id String
     drop   Drop   @relation(fields: [drop_id], references: [id])
 
-    reservationId String      @unique
-    reservation   Reservation @relation(fields: [reservationId], references: [id])
+    reservation_id String      @unique
+    reservation   Reservation @relation(fields: [reservation_id], references: [id])
 
     @@index([drop_id, purchased_at])
 }

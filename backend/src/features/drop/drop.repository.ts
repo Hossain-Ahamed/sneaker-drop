@@ -8,6 +8,13 @@ export class DropRepository {
   async create(data: Prisma.DropCreateInput, tx: Prisma.TransactionClient | PrismaClient = prisma): Promise<Drop> {
     return tx.drop.create({ data });
   }
+
+  /**
+   * Lists all drops with their current available stock
+   */
+  async findActiveDrops(tx: Prisma.TransactionClient | PrismaClient = prisma): Promise<Drop[]> {
+    return tx.drop.findMany();
+  }
 }
 
 export const dropRepository = new DropRepository();

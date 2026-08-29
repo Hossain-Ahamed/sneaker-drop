@@ -16,4 +16,10 @@ router.post(
   dropController.createDrop,
 );
 
+/**
+ * @req GET /drops
+ * list all drop items with available stock limit
+ */
+router.get("/", dropController.listDrops);
+
 export const dropRouter = router;
