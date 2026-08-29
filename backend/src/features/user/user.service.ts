@@ -1,11 +1,11 @@
-import { userBusinessLogic } from './user.business';
-import { IUserType } from './user.interface';
+import { userBusinessLogic } from "./user.business";
+import { IUserType } from "./user.interface";
 
 export class UserService {
   /**
    * Create user
    */
-  async createUserService(payload: IUserType.CreateUserDTO): Promise<IUserType.IUser> {
+  async createUser(payload: IUserType.CreateUserDTO): Promise<IUserType.IUser> {
     return userBusinessLogic.createUserLogic(payload);
   }
 }

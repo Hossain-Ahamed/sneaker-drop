@@ -1,21 +1,21 @@
-import { Request, Response } from 'express';
-import catchAsync from '../../utils/catchAsync';
-import sendResponse from '../../utils/sendResponse';
-import { httpStatus } from '../../utils/http-status';
-import { dropService } from './drop.service';
+import { Request, Response } from "express";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import { httpStatus } from "../../utils/http-status";
+import { dropService } from "./drop.service";
 
 export class DropController {
   /**
-   * POST /drops  
+   * POST /drops
    * creates a new drop
    */
   createDrop = catchAsync(async (req: Request, res: Response) => {
-    const drop = await dropService.createDropService(req.body);
+    const drop = await dropService.createDrop(req.body);
 
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
-      message: 'Drop created successfully',
+      message: "Drop created successfully",
       data: drop,
     });
   });
@@ -25,12 +25,12 @@ export class DropController {
    * lists all drop items
    */
   listDrops = catchAsync(async (req: Request, res: Response) => {
-    const drops = await dropService.listDropsService();
+    const drops = await dropService.listDrops();
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'Drops fetched successfully',
+      message: "Drops fetched successfully",
       data: drops,
     });
   });

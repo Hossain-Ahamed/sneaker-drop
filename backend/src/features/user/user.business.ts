@@ -2,7 +2,7 @@ import type { User } from '../../generated/prisma/client';
 import { userRepository } from './user.repository';
 import { IUserType } from './user.interface';
 
-/** Maps a Prisma User row to the feature's own domain shape */
+/** Utility : Domain shaped Data*/
 function toIUser(user: User): IUserType.IUser {
   return {
     id: user.id,

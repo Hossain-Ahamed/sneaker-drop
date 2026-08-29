@@ -1,19 +1,34 @@
-import { dropBusinessLogic } from './drop.business';
-import { IDropType } from './drop.interface';
+import type { TxContext } from "../../lib/unitOfWork";
+import { dropBusinessLogic } from "./drop.business";
+import { IDropType } from "./drop.interface";
 
 export class DropService {
   /**
    * Creates a drop
    */
-  async createDropService(payload: IDropType.CreateDropDTO): Promise<IDropType.IDrop> {
+  async createDrop(payload: IDropType.CreateDropDTO): Promise<IDropType.IDrop> {
     return dropBusinessLogic.createDropLogic(payload);
   }
 
   /**
    * Lists all drop items
    */
-  async listDropsService(): Promise<IDropType.IDrop[]> {
+  async listDrops(): Promise<IDropType.IDrop[]> {
     return dropBusinessLogic.listDropsLogic();
+  }
+
+  /**
+   * Claims one unit of stock for a drop, returns the remaining available stock
+   */
+  async claimStock(dropId: string, tx?: TxContext): Promise<number> {
+    return dropBusinessLogic.claimStockLogic(dropId, tx);
+  }
+
+  /**
+   * Returns one unit of stock to a drop, null if already full (available stock == total stock)
+   */
+  async restoreStock(dropId: string, tx?: TxContext): Promise<number | null> {
+    return dropBusinessLogic.restoreStockLogic(dropId, tx);
   }
 }
 
