@@ -145,9 +145,6 @@ the last unit goes:
 - **rows returned** → you won, `RETURNING` gives back the new stock level
 - **zero rows** → you lost the race → `409 Out of stock`
 
-If 100 users hit the last unit at once, exactly one `UPDATE` matches. No retries, no advisory locks,
-no `SELECT … FOR UPDATE` round trip.
-
 The same conditional-update shape guards the other transitions: restoring stock is capped by
 `available_stock < total_stock`, and a purchase racing the expiry sweep on the same reservation both
 require `status = 'ACTIVE'`, so only one can match.
@@ -161,7 +158,7 @@ rolled-back reservation can never reach clients.
 
 ## Real-time layer
 
-`lib/socket.ts` is a feature-agnostic transport — connections and rooms only. Each feature owns its
+`lib/socket.ts` is a feature-agnostic transport connections and rooms only. Each feature owns its
 own event:
 
 | Event                     | Emitted when              | Payload                                                  |
@@ -182,7 +179,7 @@ held, so it does not move the number again.
 
 ## Identity
 
-There are no passwords — the spec needed a Users table for the activity feed, not a login system. But
+There are no passwords  the spec needed a Users table for the activity feed, not a login system. But
 identity is still resolved server-side, never trusted from the client.
 
 - **Sign up** (`POST /users`) creates the account (username + display name) and sets an **httpOnly**
@@ -191,11 +188,11 @@ identity is still resolved server-side, never trusted from the client.
   browser picks up its own purchase history instead of becoming a new shopper. An unknown username
   returns 404, which the dialog turns into a prompt to sign up instead.
 - An `identifyUser` middleware resolves the cookie into `req.userId`. **Reserve and purchase do not
-  accept `user_id` in the request body at all** — a client cannot act as another user.
+  accept `user_id` in the request body at all**  a client cannot act as another user.
 - A cookie pointing at a deleted user returns 404 *and* clears itself, so a stale cookie self-heals.
 
 Username uniqueness is enforced by the Postgres `@unique` constraint rather than a read-then-write
-availability check — same reason as the stock decrement, only the constraint is race-safe.
+availability check  same reason as the stock decrement, only the constraint is race-safe.
 
 > **Two-window demo:** an httpOnly cookie is shared across a browser's normal windows — use one normal
 > window and one incognito window to act as two shoppers.
@@ -204,7 +201,7 @@ availability check — same reason as the stock decrement, only the constraint i
 
 ## Project structure
 
-**Backend — modular monolith.** One folder per feature (`drop`, `reservation`, `purchase`, `user`),
+**Backend :  modular monolith.** One folder per feature (`drop`, `reservation`, `purchase`, `user`),
 each with its own route / controller / validation / service / business / repository layer. Prisma is
 touched only in the repository; cross-feature calls go through the callee's service.
 
@@ -216,7 +213,7 @@ backend/src/
   prisma/             schema + migrations
 ```
 
-**Frontend — feature-sliced.** Same ownership idea: each feature owns its api, socket subscription,
+**Frontend :  feature-sliced.** Same ownership idea: each feature owns its api, socket subscription,
 components and types.
 
 ```
