@@ -113,29 +113,20 @@ An expired hold can never be purchased, **regardless of whether anything has swe
 Correctness does not depend on a timer.
 
 **2. The sweep.** A background loop (`reservation.scheduler.ts`) ticks every 5 seconds, takes a batch
-of up to 100 `ACTIVE` reservations whose `expires_at` has passed, and for each one — in its own
-transaction — marks it `EXPIRED`, returns the unit to `available_stock`, and broadcasts
-`stock:updated`. Per-reservation transactions mean one failure doesn't abort the rest, and an overlap
-guard stops a slow sweep from stacking on the next tick.
-
-So the sweep's only job is **returning stock**, not enforcing the deadline. That's why a Redis TTL
-wasn't used: keyspace notifications are fire-and-forget, so one that fires while the backend is down
-is lost and that unit's stock leaks. Here the state lives in the table, so a restart picks up every
-overdue row on the next tick. The tradeoff is up to 5 seconds before stock is visibly returned — never
-early, and never enough to let an expired hold buy anything.
+of up to 100 `ACTIVE` reservations whose `expires_at` has passed, and for each one  in its own
+transaction and marks it `EXPIRED`, returns the unit to `available_stock`, and broadcasts
+`stock:updated`. So the sweep's only job is **returning stock**, not enforcing the deadline
 
 ---
 
 ## Concurrency: preventing a double-claim on the last unit
 
-**The rule: never read stock and then write it. Let one atomic statement do both.**
-
-The naive version has a gap every concurrent request fits through:
+**The rule: never read stock and then write it.** 
 
 ```ts
-const drop = await findDrop(id);      // reads available_stock = 1
-if (drop.available_stock > 0) {       // ← 100 requests all pass
-  await decrementStock(id);           // ← all 100 decrement. Oversold.
+const drop = await findDrop(id);
+if (drop.available_stock > 0) { 
+  await decrementStock(id); 
 }
 ```
 
@@ -148,7 +139,7 @@ RETURNING available_stock
 ```
 
 Postgres holds a row lock for the duration of the `UPDATE`. Concurrent writers serialize on that lock
-and each re-evaluates `available_stock > 0` against the value it now sees — not one read earlier. When
+and each re-evaluates `available_stock > 0` against the value it now sees not one read earlier. When
 the last unit goes:
 
 - **rows returned** → you won, `RETURNING` gives back the new stock level
